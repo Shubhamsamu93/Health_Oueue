@@ -1,15 +1,16 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "HealthQueue/client/index.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    },
     {
-      "src": "/(.*)",
-      "dest": "/HealthQueue/client/$1"
+      "source": "/health",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/HealthQueue/client/$1"
     }
   ]
 }
