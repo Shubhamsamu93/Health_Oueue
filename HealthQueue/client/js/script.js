@@ -420,7 +420,8 @@ console.log('✅ HealthQueue Authentication Module Loaded');
 
   function initSocket() {
     if (!window.io || state.socket) return;
-    state.socket = window.io();
+    // Connect socket to the specific Render backend URL
+    state.socket = window.io(window.API_BASE);
     state.socket.on("connect", () => state.department && state.socket.emit("queue:join-department", state.department));
     state.socket.on("queue:updated", async () => state.user && loadRoleData());
   }
