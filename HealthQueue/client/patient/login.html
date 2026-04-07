@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Login</title>
+  <link rel="stylesheet" href="./patientstyle.css">
+  <script src="../js/config.js"></script>
+</head>
+<body class="patient-login">
+
+  <div class="auth-card">
+    <h2>Patient Login</h2>
+    <p class="auth-subtitle">Sign in to manage your appointments and health records.</p>
+
+    <div style="background: #e0f7ff; border-left: 4px solid #06b6d4; padding: 12px; margin-bottom: 15px; border-radius: 4px; font-size: 0.9rem; color: #0c4a6e;">
+      <strong>📌 First time?</strong> <a href="signup.html">Create an account here</a>
+    </div>
+
+    <input id="email" name="email" placeholder="Email" type="email" required>
+    <input id="password" name="password" placeholder="Password" type="password" required>
+
+    <button onclick="handleLogin()" id="loginBtn">Login</button>
+
+    <div id="feedbackMsg" style="margin-top: 10px; text-align: center; padding: 10px; border-radius: 5px; display:none;"></div>
+
+    <div class="auth-extra auth-extra-line">
+      <span>Don't have an account yet? </span>
+      <a href="signup.html">Sign up</a>
+    </div>
+  </div>
+
+  <script src="../js/script.js"></script>
+  <script>
+    function handleLogin() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const feedbackDiv = document.getElementById('feedbackMsg');
+      const btn = document.getElementById('loginBtn');
+
+      if (!email || !password) {
+        feedbackDiv.className = 'error-message';
+        feedbackDiv.textContent = '❌ Please enter email and password';
+        feedbackDiv.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Logging in...';
+      feedbackDiv.style.display = 'none';
+
+      window.login().catch(err => {
+        btn.disabled = false;
+        btn.textContent = 'Login';
+      });
+    }
+
+    // Override original login function  
+    window.login = async function() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const feedbackDiv = document.getElementById('feedbackMsg');
+      const btn = document.getElementById('loginBtn');
+
+      try {
+        const response = await fetch(`${window.API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({email,password, role: 'patient'})
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.token && data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('token', data.token);
+          feedbackDiv.style.color = '#27ae60';
+          feedbackDiv.textContent = '✅ Login successful! Redirecting...';
+          feedbackDiv.style.display = 'block';
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+        } else {
+          feedbackDiv.style.color = '#e74c3c';
+          feedbackDiv.textContent = '❌ ' + (data.msg || data.error || 'Login failed. Check your credentials.');
+          feedbackDiv.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Login';
+        }
+      } catch (error) {
+        feedbackDiv.style.color = '#e74c3c';
+        feedbackDiv.textContent = '❌ Network Error: ' + error.message;
+        feedbackDiv.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Login';
+      }
+    };
+
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+</html>

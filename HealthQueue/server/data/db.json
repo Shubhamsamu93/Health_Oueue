@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "initialized": true,
+    "averageConsultationMinutes": 12,
+    "departments": [
+      "OPD",
+      "Pharmacy",
+      "Lab"
+    ],
+    "simulatedChannels": [
+      "SMS",
+      "WhatsApp"
+    ]
+  },
+  "users": [
+    {
+      "id": "usr_c4pqlsxx",
+      "name": "Admin Desk",
+      "email": "admin@healthqueue.com",
+      "phone": "+91 90000 00001",
+      "passwordHash": "5030f797176098eadff5da55bb790d44:7514594fc917494b379754fc9f0959d43a3ddb0b04bae390c3e265f221685e644b5d1a9ff55292948bec555657212caf5a0afe08f83ca7d0af06caa894c9a0ba",
+      "role": "admin",
+      "createdAt": "2026-04-02T13:33:28.760Z"
+    },
+    {
+      "id": "usr_2f4grxx6",
+      "name": "Dr. Meera Anand",
+      "email": "doctor.opd@healthqueue.com",
+      "phone": "+91 90000 10000",
+      "passwordHash": "75eda4e6ba26d351924020b7629af5f6:d02305ba85053227cb06b5818dace3416c74efe8f6a85a81e04545b7d252ddd1fb1a1d8a541d5cdffd63f29185bb080beb47e94298d60a798f6e9775b59a66b0",
+      "role": "doctor",
+      "department": "OPD",
+      "specialization": "General Medicine",
+      "experience": 9,
+      "createdAt": "2026-04-02T13:33:28.760Z"
+    },
+    {
+      "id": "usr_7f02rwi0",
+      "name": "Dr. Rohan Nair",
+      "email": "doctor.lab@healthqueue.com",
+      "phone": "+91 90000 10000",
+      "passwordHash": "1ab17440af84d2cd5e5fe27e749d8b26:d31552b8a797f2817123d1f077ad99957a7a6254d3063d4fae97b9b2788201246874ffe71eb757d7f8ff0f71225c8375cb44a9c0b1c1df78d671f91b1e6950f5",
+      "role": "doctor",
+      "department": "Lab",
+      "specialization": "Pathology",
+      "experience": 7,
+      "createdAt": "2026-04-02T13:33:28.760Z"
+    },
+    {
+      "id": "usr_k82ikn9q",
+      "name": "Dr. Kavya Shah",
+      "email": "doctor.pharmacy@healthqueue.com",
+      "phone": "+91 90000 10000",
+      "passwordHash": "4540f7d525782653018889aff343282e:2f729fd87aa898ff9aec48a3827be87418c7ef09a93854861a9e2157a08026183eabb261805deb11bafd4aaa6affc9548e8bbd20ba2278b6cb6ffa77111e71c3",
+      "role": "doctor",
+      "department": "Pharmacy",
+      "specialization": "Clinical Pharmacology",
+      "experience": 6,
+      "createdAt": "2026-04-02T13:33:28.760Z"
+    },
+    {
+      "id": "usr_8cxdz2o6",
+      "name": "Anita Sharma",
+      "email": "patient1@healthqueue.com",
+      "phone": "+91 98888 11111",
+      "passwordHash": "d1cddc8ef90280c3a37020e32767f37c:44f5c939c8a4406fde95a8342c7814959178307209fa4742635ca8ffb7302649d9ef2e8aca986cd0bad766daf84e7f2de51a834ea3f751b7f4d1052e1d0f0d1e",
+      "role": "patient",
+      "age": 32,
+      "gender": "Female",
+      "createdAt": "2026-04-02T13:33:28.760Z"
+    },
+    {
+      "id": "usr_intluxvq",
+      "name": "Rahul Verma",
+      "email": "patient2@healthqueue.com",
+      "phone": "+91 97777 22222",
+      "passwordHash": "677733ff56e1d456e9963dec9df2144c:88b1603868fee220a765c602b2c12bcc05830e1027df583b4ff18d2f7d049024e50bf861c01608f6992a031759b150f8adffb7e607ca4e168e1333a843fcb69d",
+      "role": "patient",
+      "age": 41,
+      "gender": "Male",
+      "createdAt": "2026-04-02T13:33:28.760Z"
+    },
+    {
+      "id": "usr_bl8kvhqw",
+      "name": "Nisha Khan",
+      "email": "patient3@healthqueue.com",
+      "phone": "+91 96666 33333",
+      "passwordHash": "2be68a983c649966f612f79ce3fc1532:b5ab56a380ef53a3d4ff180db50cdd766bbe5d7b2503051416b4e289721739d2e10287589820c00bcabbd93b2bf3c796a90ae14bf0a9cfe90fa677ffd4cb6b7e",
+      "role": "patient",
+      "age": 27,
+      "gender": "Female",
+      "createdAt": "2026-04-02T13:33:28.760Z"
+    },
+    {
+      "id": "usr_s7ez0606",
+      "name": "patient",
+      "email": "patient@gmail.com",
+      "phone": "1234567890",
+      "passwordHash": "06e5e280184befb918bc433b690c602a:e2440847887ffa4e203d92d51ea12827c7b85fdc8d59f6d72dfd931e72ee7cb10d5388936b9e7ea481d84554974ac903187b483e86b92e1db4b1c48b25b11984",
+      "role": "patient",
+      "age": 20,
+      "gender": "Male",
+      "department": "",
+      "specialization": "",
+      "experience": 0,
+      "createdAt": "2026-04-02T13:37:41.942Z"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt_zu24jp8t",
+      "token": "OPD-001",
+      "patientId": "usr_8cxdz2o6",
+      "doctorId": "usr_2f4grxx6",
+      "department": "OPD",
+      "priority": "normal",
+      "date": "2026-04-02T13:33:28.760Z",
+      "timeSlot": "09:30",
+      "reason": "Fever and fatigue",
+      "status": "in-progress",
+      "createdAt": "2026-04-02T13:03:28.760Z",
+      "startedAt": "2026-04-02T13:28:28.760Z"
+    },
+    {
+      "id": "apt_weuzhpg5",
+      "token": "OPD-002",
+      "patientId": "usr_intluxvq",
+      "doctorId": "usr_2f4grxx6",
+      "department": "OPD",
+      "priority": "emergency",
+      "date": "2026-04-02T13:33:28.760Z",
+      "timeSlot": "09:45",
+      "reason": "Breathing discomfort",
+      "status": "waiting",
+      "createdAt": "2026-04-02T13:13:28.760Z"
+    },
+    {
+      "id": "apt_y0v5lpcx",
+      "token": "LAB-001",
+      "patientId": "usr_bl8kvhqw",
+      "doctorId": "usr_7f02rwi0",
+      "department": "Lab",
+      "priority": "normal",
+      "date": "2026-04-02T13:33:28.760Z",
+      "timeSlot": "10:00",
+      "reason": "Blood test",
+      "status": "waiting",
+      "createdAt": "2026-04-02T13:23:28.760Z"
+    },
+    {
+      "id": "apt_5s3ofrck",
+      "token": "PHA-001",
+      "patientId": "usr_8cxdz2o6",
+      "doctorId": "usr_k82ikn9q",
+      "department": "Pharmacy",
+      "priority": "normal",
+      "date": "2026-04-01T13:33:28.760Z",
+      "timeSlot": "11:15",
+      "reason": "Prescription collection",
+      "status": "completed",
+      "createdAt": "2026-04-01T12:33:28.760Z",
+      "startedAt": "2026-04-01T13:03:28.760Z",
+      "completedAt": "2026-04-01T13:15:28.760Z"
+    }
+  ],
+  "notifications": []
+}

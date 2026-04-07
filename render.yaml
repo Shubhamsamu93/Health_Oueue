@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: healthqueue-backend
+    runtime: node
+    rootDir: HealthQueue/server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false  # Set this manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true  # Render will generate a random value

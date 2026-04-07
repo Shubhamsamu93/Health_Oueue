@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Appointment Click Test</title>
+</head>
+<body>
+    <h1>Appointment Click Handler Test</h1>
+    <button onclick="testClick()">Test Click Handler</button>
+    
+    <script>
+        // Simulate the appointments array
+        let appointments = [
+            { 
+                _id: 'apt1',
+                doctorName: 'Dr. Rajesh Kumar',
+                specialization: 'General Physician',
+                hospital: 'City Medical Center',
+                date: new Date(Date.now() + 2*24*60*60*1000).toISOString(),
+                time: '10:00 AM',
+                reason: 'Regular checkup',
+                status: 'Scheduled'
+            },
+            {
+                _id: 'apt2',
+                doctorName: 'Dr. Priya Singh',
+                specialization: 'Cardiologist',
+                hospital: 'Heart Care Hospital',
+                date: new Date(Date.now() + 5*24*60*60*1000).toISOString(),
+                time: '2:00 PM',
+                reason: 'Heart checkup',
+                status: 'Scheduled'
+            }
+        ];
+
+        // Test click handler
+        function testClick() {
+            console.log('✅ Test click detected!');
+            console.log('Total appointments:', appointments.length);
+            
+            const appointmentId = 'appointment_apt1';
+            console.log('Testing with appointment ID:', appointmentId);
+            
+            let appointment = appointments.find(a => 
+                a._id === appointmentId || 
+                a.appointmentId === appointmentId || 
+                ('appointment_' + a._id) === appointmentId
+            );
+            
+            if (appointment) {
+                console.log('✅ Appointment found:', appointment);
+            } else {
+                console.log('❌ Appointment not found, trying first appointment');
+                appointment = appointments[0];
+                console.log('✅ Using appointment:', appointment);
+            }
+        }
+
+        function handleAppointmentClick(element, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('🔍 Clicked appointment element');
+            testClick();
+        }
+
+        window.handleAppointmentClick = handleAppointmentClick;
+        
+        console.log('✅ Test script loaded successfully');
+    </script>
+</body>
+</html>

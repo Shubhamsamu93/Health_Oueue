@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Patient Profile • HealthQueue</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="patientstyle.css">
+</head>
+<body class="patient-dashboard patient-profile-page">
+  <button class="mobile-menu-toggle d-lg-none" id="mobileMenuToggle" aria-label="Open navigation menu">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-hospital-symbol logo-icon-sm"></i>
+      <h4>HealthQueue</h4>
+      <p class="user-name" id="profileSidebarName">Patient</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-calendar-check"></i> Appointments</a>
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-file-medical-alt"></i> Medical Records</a>
+      <a href="profile.html" class="nav-item active"><i class="fas fa-user"></i> Profile</a>
+    </nav>
+    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <main class="main-content">
+    <header class="dashboard-header profile-topbar">
+      <div class="header-left">
+        <h2>Patient Profile</h2>
+        <p class="header-subtitle">Manage your account, records, and appointment journey</p>
+      </div>
+      <div class="header-right gap-2">
+        <a href="dashboard.html" class="btn btn-outline-primary btn-sm"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+        <div class="user-avatar profile-header-avatar" id="profileHeaderAvatar">P</div>
+      </div>
+    </header>
+
+    <section class="profile-hero-card" id="profileHeroCard">
+      <div class="profile-hero-main">
+        <div class="profile-photo-wrap">
+          <div class="profile-photo" id="profileAvatarLarge">P</div>
+          <span class="profile-online-pill"><i class="fas fa-circle"></i> Active</span>
+        </div>
+        <div class="profile-hero-copy">
+          <div class="profile-role-badge"><i class="fas fa-heart-pulse"></i> Patient Profile</div>
+          <h1 id="profileName">Loading...</h1>
+          <div class="profile-meta-row">
+            <span><i class="fas fa-envelope"></i> <span id="profileEmail">--</span></span>
+            <span><i class="fas fa-phone"></i> <span id="profilePhone">--</span></span>
+            <span><i class="fas fa-user-group"></i> <span id="profileAgeGender">--</span></span>
+          </div>
+          <p class="profile-address-line" id="profileAddress">Address not added yet</p>
+        </div>
+      </div>
+      <div class="profile-hero-stats">
+        <div class="profile-stat-card">
+          <span>Appointments</span>
+          <strong id="profileApptCount">0</strong>
+        </div>
+        <div class="profile-stat-card">
+          <span>Records</span>
+          <strong id="profileRecordCount">0</strong>
+        </div>
+        <div class="profile-stat-card">
+          <span>Queue Token</span>
+          <strong id="profileQueueToken">--</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-overview-grid">
+      <div class="profile-progress-card">
+        <div class="section-mini-head">
+          <span><i class="fas fa-chart-line"></i> Profile Completion</span>
+          <strong id="completionText">0%</strong>
+        </div>
+        <div class="progress profile-progress-bar">
+          <div class="progress-bar" id="completionBar" role="progressbar" style="width: 0%"></div>
+        </div>
+        <p class="profile-progress-help">Complete your details for faster booking, smoother check-ins, and better communication.</p>
+      </div>
+      <div class="queue-status-card" id="queueStatusCard">
+        <div class="section-mini-head">
+          <span><i class="fas fa-wave-square"></i> Current Queue Status</span>
+          <span class="badge text-bg-light" id="queueStatusBadge">No active queue</span>
+        </div>
+        <div class="queue-status-grid">
+          <div>
+            <small>Current Token</small>
+            <strong id="queueTokenValue">--</strong>
+          </div>
+          <div>
+            <small>Queue Position</small>
+            <strong id="queuePositionValue">--</strong>
+          </div>
+        </div>
+      </div>
+      <div class="profile-quick-actions">
+        <button class="btn btn-primary" id="editProfileBtn"><i class="fas fa-pen-to-square me-2"></i>Edit Profile</button>
+        <button class="btn btn-success d-none" id="saveProfileBtn"><i class="fas fa-floppy-disk me-2"></i>Save Changes</button>
+        <button class="btn btn-outline-secondary" id="changePasswordBtn"><i class="fas fa-lock me-2"></i>Change Password</button>
+        <button class="btn btn-outline-danger" id="logoutProfileBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+      </div>
+    </section>
+
+    <section class="profile-main-grid">
+      <div class="profile-content-card">
+        <div class="profile-tabs">
+          <button class="profile-tab active" data-tab="info"><i class="fas fa-id-card"></i> Profile Info</button>
+          <button class="profile-tab" data-tab="appointments"><i class="fas fa-calendar-days"></i> Appointments</button>
+          <button class="profile-tab" data-tab="records"><i class="fas fa-file-waveform"></i> Records</button>
+        </div>
+
+        <div class="profile-tab-panel active" data-panel="info">
+          <div class="profile-form-grid">
+            <div class="profile-field-card">
+              <label>Full Name</label>
+              <input type="text" class="form-control" id="inputName" disabled>
+            </div>
+            <div class="profile-field-card">
+              <label>Email</label>
+              <input type="email" class="form-control" id="inputEmail" disabled>
+            </div>
+            <div class="profile-field-card">
+              <label>Phone Number</label>
+              <input type="text" class="form-control" id="inputPhone" disabled>
+            </div>
+            <div class="profile-field-card">
+              <label>Age</label>
+              <input type="number" class="form-control" id="inputAge" disabled>
+            </div>
+            <div class="profile-field-card">
+              <label>Gender</label>
+              <select class="form-select" id="inputGender" disabled>
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="profile-field-card profile-field-card-wide">
+              <label>Address</label>
+              <textarea class="form-control" id="inputAddress" rows="3" disabled></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-tab-panel" data-panel="appointments">
+          <div class="panel-toolbar">
+            <div class="filter-chip-group">
+              <button class="filter-chip active" data-status="all">All</button>
+              <button class="filter-chip" data-status="upcoming">Upcoming</button>
+              <button class="filter-chip" data-status="completed">Completed</button>
+              <button class="filter-chip" data-status="cancelled">Cancelled</button>
+            </div>
+          </div>
+          <div id="appointmentsPanelList" class="profile-list-shell">
+            <div class="profile-empty-state">Loading appointments...</div>
+          </div>
+        </div>
+
+        <div class="profile-tab-panel" data-panel="records">
+          <div id="recordsPanelList" class="profile-list-shell">
+            <div class="profile-empty-state">Loading medical records...</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="profile-side-stack">
+        <div class="profile-side-card">
+          <div class="section-mini-head">
+            <span><i class="fas fa-shield-heart"></i> Security</span>
+          </div>
+          <p>Keep your account secure with a strong password and updated personal details.</p>
+          <button class="btn btn-outline-dark w-100" id="sideChangePasswordBtn">Change Password</button>
+        </div>
+        <div class="profile-side-card">
+          <div class="section-mini-head">
+            <span><i class="fas fa-notes-medical"></i> Health Snapshot</span>
+          </div>
+          <div class="mini-stat-line"><span>Upcoming visits</span><strong id="miniUpcomingCount">0</strong></div>
+          <div class="mini-stat-line"><span>Completed visits</span><strong id="miniCompletedCount">0</strong></div>
+          <div class="mini-stat-line"><span>Reports ready</span><strong id="miniRecordCount">0</strong></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal fade" id="recordPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-file-medical me-2"></i>Record Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="recordPreviewBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-lock me-2"></i>Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">New Password</label>
+            <input type="password" class="form-control" id="newPasswordInput" placeholder="Enter new password">
+          </div>
+          <div>
+            <label class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPasswordInput" placeholder="Confirm password">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <button class="btn btn-primary" id="savePasswordBtn">Update Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/script.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Sign Up - HealthQueue</title>
+  <link rel="stylesheet" href="./patientstyle.css">
+  <style>
+    .success-message { color: #27ae60; font-weight: bold; }
+    .error-message { color: #e74c3c; font-weight: bold; }
+  </style>
+  <script src="../js/config.js"></script>
+</head>
+<body class="patient-signup">
+
+  <div class="auth-card">
+    <h2>Create Patient Account</h2>
+    <p class="auth-subtitle">Join HealthQueue to book appointments and manage your health records.</p>
+
+    <input id="name" name="name" placeholder="Full Name" type="text" required>
+    <input id="email" name="email" placeholder="Email" type="email" required>
+    <input id="phone" name="phone" placeholder="Phone Number" type="tel" required>
+    <input id="password" name="password" placeholder="Password" type="password" required>
+
+    <button onclick="signup()" id="signupBtn">Create Account</button>
+
+    <div id="feedbackMsg" style="margin-top: 10px; text-align: center; padding: 10px; border-radius: 5px; display:none;"></div>
+
+    <div class="auth-extra auth-extra-line">
+      <span>Already have an account? </span>
+      <a href="login.html">Login here</a>
+    </div>
+  </div>
+
+  <script src="../js/script.js"></script>
+  <script>
+    // Override signup for better UX
+    const originalSignup = window.signup;
+    window.signup = async function() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const password = document.getElementById('password').value;
+      const feedbackDiv = document.getElementById('feedbackMsg');
+      const btn = document.getElementById('signupBtn');
+
+      if (!name || !email || !phone || !password) {
+        feedbackDiv.className = 'error-message';
+        feedbackDiv.textContent = '❌ Please fill all fields';
+        feedbackDiv.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+
+      try {
+        const response = await fetch(`${window.API_BASE}/api/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            password,
+            role: 'patient'
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          feedbackDiv.className = 'success-message';
+          feedbackDiv.textContent = '✅ Account created! Redirecting to login...';
+          feedbackDiv.style.display = 'block';
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+        } else {
+          feedbackDiv.className = 'error-message';
+          feedbackDiv.textContent = '❌ ' + (data.error || data.msg || 'Signup failed');
+          feedbackDiv.style.display = 'block';
+        }
+      } catch (error) {
+        feedbackDiv.className = 'error-message';
+        feedbackDiv.textContent = '❌ Network Error: ' + error.message;
+        feedbackDiv.style.display = 'block';
+        console.error('Signup error:', error);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    };
+  </script>
+</body>
+</html>

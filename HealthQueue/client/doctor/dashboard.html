@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - HealthQueue</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- Doctor Style CSS -->
+    <link rel="stylesheet" href="doctorstyle.css">
+</head>
+<body class="dashboard-page">
+    <button class="mobile-menu-toggle d-lg-none" id="mobileMenuToggle" aria-label="Open doctor navigation">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-user-md logo-icon-sm"></i>
+            <h4>Dr. Dashboard</h4>
+            <p class="sidebar-subtext" id="doctorSidebarName">Doctor</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-view="appointments">
+                <i class="fas fa-calendar-check"></i> Appointments
+            </a>
+            <a href="#" class="nav-item" data-view="queue">
+                <i class="fas fa-list-ol"></i> Queue Management
+            </a>
+            <a href="#" class="nav-item" data-view="patients">
+                <i class="fas fa-users"></i> Patients
+            </a>
+            <a href="#" class="nav-item" data-view="notifications">
+                <i class="fas fa-bell"></i> Notifications
+            </a>
+            <a href="#" class="nav-item" data-view="records">
+                <i class="fas fa-file-medical"></i> Medical Records
+            </a>
+            <a href="#" class="nav-item" data-view="schedule">
+                <i class="fas fa-user-clock"></i> Schedule
+            </a>
+            <a href="#" class="nav-item" data-view="messages">
+                <i class="fas fa-comments"></i> Messages
+            </a>
+            <a href="#" class="nav-item" data-view="analytics">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+            <a href="#" class="nav-item" data-view="settings">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h2 id="doctorPageTitle"><i class="fas fa-calendar-check me-2"></i>Your Appointments</h2>
+                <p class="header-subtitle" id="doctorPageSubtitle">Manage today's schedule</p>
+            </div>
+            <div class="header-right">
+                <span class="welcome-text" id="doctorWelcomeText">Welcome back, Doctor!</span>
+                <div class="doctor-avatar" id="doctorAvatar">D</div>
+            </div>
+        </header>
+
+        <section class="doctor-view-section is-active" id="appointmentsView">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card pending">
+                <i class="fas fa-clock stat-icon"></i>
+                <div>
+                    <h3 id="pendingCount">0</h3>
+                    <span>Pending</span>
+                </div>
+            </div>
+            <div class="stat-card approved">
+                <i class="fas fa-check-circle stat-icon"></i>
+                <div>
+                    <h3 id="approvedCount">0</h3>
+                    <span>Approved</span>
+                </div>
+            </div>
+            <div class="stat-card rejected">
+                <i class="fas fa-times-circle stat-icon"></i>
+                <div>
+                    <h3 id="rejectedCount">0</h3>
+                    <span>Rejected</span>
+                </div>
+            </div>
+            <div class="stat-card completed">
+                <i class="fas fa-circle-check stat-icon"></i>
+                <div>
+                    <h3 id="completedCount">0</h3>
+                    <span>Completed</span>
+                </div>
+            </div>
+        </div>
+
+        <section class="doctor-overview-grid">
+            <div class="analytics-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <h3>Today's Flow</h3>
+                        <p>Live overview of your patient load</p>
+                    </div>
+                    <span class="live-pill"><i class="fas fa-circle"></i> Auto refresh 10s</span>
+                </div>
+                <div class="analytics-grid">
+                    <div class="analytics-tile">
+                        <span>Total Patients Today</span>
+                        <strong id="totalPatientsToday">0</strong>
+                    </div>
+                    <div class="analytics-tile">
+                        <span>Completed Appointments</span>
+                        <strong id="analyticsCompletedCount">0</strong>
+                    </div>
+                    <div class="analytics-tile">
+                        <span>Pending Count</span>
+                        <strong id="analyticsPendingCount">0</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="analytics-card chart-card-doctor">
+                <div class="analytics-card-header">
+                    <div>
+                        <h3>Appointment Analytics</h3>
+                        <p>Status split for today</p>
+                    </div>
+                </div>
+                <canvas id="doctorAnalyticsChart" height="180"></canvas>
+            </div>
+        </section>
+
+        <!-- Appointments List -->
+        <div class="appointments-section">
+            <div class="section-header">
+                <h3>Today's Appointments</h3>
+                <div class="status-filters">
+                    <button class="filter-btn active" data-status="all">All</button>
+                    <button class="filter-btn" data-status="pending">Pending</button>
+                    <button class="filter-btn" data-status="approved">Approved</button>
+                    <button class="filter-btn" data-status="rejected">Rejected</button>
+                    <button class="filter-btn" data-status="completed">Completed</button>
+                </div>
+            </div>
+            <div id="doctorLoadingState" class="state-card loading-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Loading appointments...</span>
+            </div>
+            <div id="doctorErrorState" class="state-card error-state d-none">
+                <i class="fas fa-circle-exclamation"></i>
+                <div>
+                    <strong>Unable to load appointments</strong>
+                    <p>Please check the API connection and try again.</p>
+                </div>
+            </div>
+            <div id="list" class="appointments-list"></div>
+            <div id="noAppointments" class="no-data">
+                <i class="fas fa-calendar-times"></i>
+                <h4>No appointments found</h4>
+                <p>Appointments will appear here when scheduled</p>
+            </div>
+        </div>
+
+        <section class="doctor-panel-grid">
+            <div class="doctor-side-panel" id="doctorPatientsPanel">
+                <div class="panel-head">
+                    <h3><i class="fas fa-users me-2"></i>Patient Quick View</h3>
+                    <span id="doctorPatientPanelCount">0 patients</span>
+                </div>
+                <div id="doctorPatientsList" class="doctor-mini-list"></div>
+            </div>
+            <div class="doctor-side-panel" id="doctorSettingsPanel">
+                <div class="panel-head">
+                    <h3><i class="fas fa-bell me-2"></i>Dashboard Notes</h3>
+                </div>
+                <ul class="doctor-notes-list">
+                    <li>Approve or reject appointments directly from cards.</li>
+                    <li>Click any appointment to view patient details and medical history.</li>
+                    <li>Dashboard refreshes automatically every 10 seconds.</li>
+                </ul>
+            </div>
+        </section>
+        </section>
+
+        <section class="doctor-view-section" id="patientsView">
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Patients Directory</h3>
+                    <div class="patients-toolbar">
+                        <input type="search" id="patientSearchInput" class="form-control patient-search-input" placeholder="Search patient by name, phone, token">
+                        <select id="patientStatusFilter" class="form-select patient-filter-select">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="patientsDirectoryList" class="patients-directory-grid"></div>
+                <div id="patientsDirectoryEmpty" class="no-data">
+                    <i class="fas fa-users-slash"></i>
+                    <h4>No patients found</h4>
+                    <p>Patients linked to this doctor will appear here.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="doctor-view-section" id="queueView">
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Queue Management</h3>
+                    <div class="queue-header-actions">
+                        <button class="btn btn-primary" id="callNextPatientBtn"><i class="fas fa-bullhorn me-2"></i>Call Next Patient</button>
+                    </div>
+                </div>
+                <div class="queue-summary-grid">
+                    <div class="queue-summary-card">
+                        <span>Live Queue Size</span>
+                        <strong id="queueCount">0</strong>
+                    </div>
+                    <div class="queue-summary-card">
+                        <span>Now Serving</span>
+                        <strong id="queueNowServing">No patient</strong>
+                    </div>
+                    <div class="queue-summary-card">
+                        <span>Next Up</span>
+                        <strong id="queueNextUp">Waiting list empty</strong>
+                    </div>
+                </div>
+                <div id="queueList" class="queue-list"></div>
+                <div id="queueEmpty" class="no-data">
+                    <i class="fas fa-list-check"></i>
+                    <h4>No active queue</h4>
+                    <p>Pending and approved appointments will appear in the live queue.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="doctor-view-section" id="notificationsView">
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Notifications</h3>
+                    <div class="queue-header-actions">
+                        <button class="btn btn-outline-secondary" id="markNotificationsReadBtn"><i class="fas fa-check-double me-2"></i>Mark All Read</button>
+                    </div>
+                </div>
+                <div id="notificationsList" class="notification-list"></div>
+                <div id="notificationsEmpty" class="no-data">
+                    <i class="fas fa-bell-slash"></i>
+                    <h4>No notifications yet</h4>
+                    <p>New appointment alerts and queue updates will appear here.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="doctor-view-section" id="recordsView">
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Medical Records</h3>
+                    <div class="patients-toolbar">
+                        <input type="search" id="recordSearchInput" class="form-control patient-search-input" placeholder="Search patient name, ID or record note">
+                    </div>
+                </div>
+                <div id="recordsList" class="record-list"></div>
+                <div id="recordsEmpty" class="no-data">
+                    <i class="fas fa-file-circle-xmark"></i>
+                    <h4>No medical records available</h4>
+                    <p>Patient history and consultation reports will appear here.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="doctor-view-section" id="scheduleView">
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Schedule Management</h3>
+                </div>
+                <div class="schedule-grid">
+                    <div class="doctor-settings-card">
+                        <label>Availability Status</label>
+                        <select id="availabilityStatus" class="form-select">
+                            <option value="available">Available</option>
+                            <option value="busy">Busy</option>
+                            <option value="offline">Offline</option>
+                        </select>
+                    </div>
+                    <div class="doctor-settings-card">
+                        <label>Consultation Mode</label>
+                        <select id="consultationMode" class="form-select">
+                            <option value="in-person">In-person</option>
+                            <option value="online">Online</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="doctor-settings-card">
+                        <label>Morning Slot</label>
+                        <input type="text" id="morningSlotInput" class="form-control" placeholder="9:00 AM - 1:00 PM">
+                    </div>
+                    <div class="doctor-settings-card">
+                        <label>Evening Slot</label>
+                        <input type="text" id="eveningSlotInput" class="form-control" placeholder="4:00 PM - 8:00 PM">
+                    </div>
+                    <div class="doctor-settings-card doctor-settings-card-wide">
+                        <label>Available Days</label>
+                        <div class="schedule-day-grid">
+                            <label><input type="checkbox" class="schedule-day" value="Mon"> Mon</label>
+                            <label><input type="checkbox" class="schedule-day" value="Tue"> Tue</label>
+                            <label><input type="checkbox" class="schedule-day" value="Wed"> Wed</label>
+                            <label><input type="checkbox" class="schedule-day" value="Thu"> Thu</label>
+                            <label><input type="checkbox" class="schedule-day" value="Fri"> Fri</label>
+                            <label><input type="checkbox" class="schedule-day" value="Sat"> Sat</label>
+                            <label><input type="checkbox" class="schedule-day" value="Sun"> Sun</label>
+                        </div>
+                    </div>
+                    <div class="doctor-settings-card doctor-settings-card-wide">
+                        <label>Notes for Patients</label>
+                        <textarea id="scheduleNotesInput" class="form-control" rows="4" placeholder="Add schedule notes, teleconsultation link hours, break times, etc."></textarea>
+                    </div>
+                </div>
+                <div class="doctor-settings-actions">
+                    <button class="btn btn-primary" id="saveScheduleBtn"><i class="fas fa-calendar-plus me-2"></i>Save Schedule</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="doctor-view-section" id="messagesView">
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Doctor-Patient Messages</h3>
+                </div>
+                <div class="messages-layout">
+                    <aside class="messages-sidebar" id="messageThreads"></aside>
+                    <div class="messages-panel">
+                        <div class="messages-panel-header">
+                            <div>
+                                <h4 id="messageThreadTitle">Select a patient</h4>
+                                <p id="messageThreadSubtitle">Start a quick update or follow-up conversation.</p>
+                            </div>
+                        </div>
+                        <div id="messageList" class="message-list"></div>
+                        <div class="message-composer">
+                            <textarea id="messageInput" class="form-control" rows="3" placeholder="Write a message for your patient..."></textarea>
+                            <div class="message-composer-actions">
+                                <button class="btn btn-primary" id="sendMessageBtn"><i class="fas fa-paper-plane me-2"></i>Send Message</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="doctor-view-section" id="analyticsView">
+            <div class="doctor-overview-grid">
+                <div class="analytics-card analytics-card-overview">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h3>Appointment Overview</h3>
+                            <p>Track your consultation pipeline at a glance</p>
+                        </div>
+                        <span class="analytics-chip"><i class="fas fa-wave-square"></i> Live Summary</span>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="analytics-tile analytics-tile-total">
+                            <div class="analytics-tile-icon"><i class="fas fa-calendar-day"></i></div>
+                            <span>Total Appointments</span>
+                            <strong id="analyticsTotalAppointments">0</strong>
+                        </div>
+                        <div class="analytics-tile analytics-tile-approved">
+                            <div class="analytics-tile-icon"><i class="fas fa-circle-check"></i></div>
+                            <span>Approved</span>
+                            <strong id="analyticsApprovedCount">0</strong>
+                        </div>
+                        <div class="analytics-tile analytics-tile-rejected">
+                            <div class="analytics-tile-icon"><i class="fas fa-circle-xmark"></i></div>
+                            <span>Rejected</span>
+                            <strong id="analyticsRejectedCount">0</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="analytics-card chart-card-doctor">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h3>Completion Trend</h3>
+                            <p>How today is progressing</p>
+                        </div>
+                        <span class="analytics-chip analytics-chip-soft"><i class="fas fa-chart-column"></i> Daily Pulse</span>
+                    </div>
+                    <canvas id="doctorTrendChart" height="180"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="doctor-view-section" id="settingsView">
+            <div class="appointments-section">
+                <div class="section-header">
+                    <h3>Doctor Profile Settings</h3>
+                </div>
+                <div class="doctor-settings-grid">
+                    <div class="doctor-settings-card">
+                        <label>Full Name</label>
+                        <input type="text" id="doctorSettingsName" class="form-control">
+                    </div>
+                    <div class="doctor-settings-card">
+                        <label>Email</label>
+                        <input type="email" id="doctorSettingsEmail" class="form-control" disabled>
+                    </div>
+                    <div class="doctor-settings-card">
+                        <label>Phone Number</label>
+                        <input type="text" id="doctorSettingsPhone" class="form-control">
+                    </div>
+                    <div class="doctor-settings-card">
+                        <label>Experience</label>
+                        <input type="text" id="doctorSettingsExperience" class="form-control" disabled>
+                    </div>
+                    <div class="doctor-settings-card doctor-settings-card-wide">
+                        <label>Address</label>
+                        <textarea id="doctorSettingsAddress" class="form-control" rows="4" placeholder="Add clinic or residence address"></textarea>
+                    </div>
+                </div>
+                <div class="doctor-settings-actions">
+                    <button class="btn btn-primary" id="saveDoctorSettingsBtn"><i class="fas fa-floppy-disk me-2"></i>Save Settings</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="modal fade" id="appointmentDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content appointment-modal-content">
+                <div class="modal-header appointment-modal-header">
+                    <div>
+                        <h5 class="modal-title"><i class="fas fa-user-injured me-2"></i>Patient Appointment Details</h5>
+                        <p class="modal-subtitle mb-0" id="modalAppointmentSubtitle">Review patient information and notes</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="patient-modal-grid">
+                        <div class="patient-modal-card">
+                            <div class="patient-modal-card-head">
+                                <h6><i class="fas fa-id-card me-2"></i>Patient Info</h6>
+                            </div>
+                            <div id="patientInfoContent"></div>
+                        </div>
+                        <div class="patient-modal-card">
+                            <div class="patient-modal-card-head">
+                                <h6><i class="fas fa-notes-medical me-2"></i>Medical History</h6>
+                            </div>
+                            <div id="patientHistoryContent"></div>
+                        </div>
+                    </div>
+                    <div class="patient-modal-card mt-3">
+                        <div class="patient-modal-card-head">
+                            <h6><i class="fas fa-sticky-note me-2"></i>Notes Section</h6>
+                        </div>
+                        <textarea id="doctorNotesInput" class="form-control doctor-notes-input" rows="4" placeholder="Add consultation notes, instructions, or observations..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-outline-primary" id="modalDownloadBtn"><i class="fas fa-download me-2"></i>Download Clinical Summary</button>
+                    <button class="btn btn-outline-danger" id="modalRejectBtn">Reject</button>
+                    <button class="btn btn-primary" id="modalApproveBtn">Approve</button>
+                    <button class="btn btn-success" id="modalCompleteBtn">Mark as Completed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="patientDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content appointment-modal-content">
+                <div class="modal-header appointment-modal-header">
+                    <div>
+                        <h5 class="modal-title"><i class="fas fa-users me-2"></i>Patient Details</h5>
+                        <p class="modal-subtitle mb-0" id="patientModalSubtitle">Patient overview</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="patientModalContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Patient Dashboard • HealthQueue</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="patientstyle.css">
+  </head>
+  <body class="patient-dashboard">
+    <button class="mobile-menu-toggle d-lg-none" id="mobileMenuToggle" aria-label="Open navigation menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-hospital-symbol logo-icon-sm"></i>
+        <h4>HealthQueue</h4>
+        <p class="user-name" id="sidebarUserName">Patient</p>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="#" class="nav-item" data-section="doctors"><i class="fas fa-user-md"></i> Doctors</a>
+        <a href="#" class="nav-item" data-section="appointments"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="#" class="nav-item" data-section="records"><i class="fas fa-file-medical-alt"></i> Medical Records</a>
+        <a href="#" class="nav-item" data-section="profile"><i class="fas fa-user"></i> Profile</a>
+      </nav>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <main class="main-content">
+      <header class="dashboard-header">
+        <div class="header-left">
+          <h2 id="pageTitle">Dashboard</h2>
+          <p class="header-subtitle" id="welcomeText">Welcome back</p>
+        </div>
+        <div class="header-right">
+          <div class="notification-bell" id="notifToggle"><i class="fas fa-bell"></i><span class="notification-count" id="notificationCount">0</span></div>
+          <div class="user-avatar" id="userAvatar">S</div>
+        </div>
+      </header>
+
+      <section class="summary-grid">
+        <div class="summary-card next-appointment">
+          <div class="card-head">Next Appointment <span class="badge bg-success float-end" id="apptTag">—</span></div>
+          <div class="card-body">
+            <div class="doctor"><strong id="nextDoctor">—</strong> <small id="nextSpec">—</small></div>
+            <div class="datetime" id="nextDateTime">—</div>
+            <div class="card-actions mt-3">
+              <button class="btn btn-outline-primary btn-sm" id="rescheduleBtn">Reschedule</button>
+              <button class="btn btn-primary btn-sm" id="joinBtn">Join Video Call</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-card live-queue">
+          <div class="card-head">Live Queue Status</div>
+          <div class="card-body">
+            <div class="queue-top d-flex justify-content-between align-items-center">
+              <div>Token <strong id="currentToken">#—</strong></div>
+              <div class="text-muted" id="patientsAhead">— ahead</div>
+            </div>
+            <div class="eta mt-2" id="eta">Est. wait —</div>
+            <div class="queue-minimap mt-3" id="queueMini"></div>
+          </div>
+        </div>
+
+        <div class="summary-card meds">
+          <div class="card-head">Today's Medicines</div>
+          <div class="card-body" id="medsList">
+            <div class="empty">No reminders for today</div>
+          </div>
+        </div>
+
+        <div class="summary-card reports">
+          <div class="card-head">Pending Reports</div>
+          <div class="card-body" id="reportsList">
+            <div class="empty">No pending reports</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="layout-grid">
+        <div class="left-col">
+          <div class="card content-section">
+            <div class="section-header"><h3>Live Queue Tracker</h3></div>
+            <div class="queue-tracker" id="queueTracker">
+              <div class="tracker-top d-flex justify-content-between align-items-center mb-3">
+                <div>Now Serving <strong id="servingToken">#—</strong></div>
+                <div>Your Token <strong id="yourToken">#—</strong></div>
+                <div class="text-muted" id="aheadSmall">— ahead</div>
+              </div>
+              <div class="tracker-steps" id="trackerSteps"></div>
+            </div>
+          </div>
+
+          <div class="card content-section">
+            <div class="section-header"><h3>Quick Actions</h3></div>
+            <div class="actions-grid quick-grid">
+              <button class="action-card" id="actBook"><i class="fas fa-calendar-plus"></i><span>Book Appointment</span></button>
+              <button class="action-card" id="actRecords"><i class="fas fa-file-medical"></i><span>View Records</span></button>
+              <button class="action-card" id="actPrecaution"><i class="fas fa-shield-heart"></i><span>Precautions</span></button>
+              <button class="action-card" id="actOrder"><i class="fas fa-pills"></i><span>Order Medicines</span></button>
+              <button class="action-card btn-danger" id="actEmergency"><i class="fas fa-ambulance"></i><span>Emergency Help</span></button>
+            </div>
+          </div>
+
+          <div class="card content-section" id="appointmentsCard">
+            <div class="section-header"><h3>Appointments</h3><a class="view-all" href="#" id="viewAllAppts">View All</a></div>
+            <div id="upcomingContainer"></div>
+            <hr>
+            <div id="pastContainer"></div>
+          </div>
+        </div>
+
+        <aside class="right-col">
+          <div class="card content-section small-card">
+            <div class="section-header"><h4>Medical Records</h4><a class="view-all" href="#" id="viewAllRecordsLink" onclick="event.preventDefault(); showAllRecords();">View All</a></div>
+            <div id="recordsList"></div>
+          </div>
+
+          <div class="card content-section small-card">
+            <div class="section-header"><h4>Health Summary</h4></div>
+            <div class="health-grid" id="healthSummary">
+              <div class="health-card"><div class="label">BP</div><div class="value" id="bpVal">—</div></div>
+              <div class="health-card"><div class="label">Sugar</div><div class="value" id="sugarVal">—</div></div>
+              <div class="health-card"><div class="label">Heart Rate</div><div class="value" id="hrVal">—</div></div>
+            </div>
+            <div class="chart-card mt-3"><canvas id="healthChart" height="140"></canvas></div>
+          </div>
+
+          <div class="card content-section small-card">
+            <div class="section-header"><h4>Notifications & Alerts</h4></div>
+            <div id="notificationsList"></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <!-- Doctors Section Modal -->
+    <div class="modal fade" id="doctorsModal" tabindex="-1">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header doctors-modal-header" style="background: linear-gradient(135deg, #3b82f6, #60a5fa); color: white; border: none; padding: 2rem;">
+            <h5 class="modal-title" style="font-size: 2rem; font-weight: 700;"><i class="fas fa-user-md"></i> Available Doctors</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="font-size: 1.5rem;"></button>
+          </div>
+          <div class="modal-body doctors-modal-body" id="doctorsList" style="padding: 3rem;">
+            <div class="text-center text-muted py-5"><i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 1rem; display: block;"></i>Loading doctors...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Precautions Modal -->
+    <div class="modal fade" id="precautionsModal" tabindex="-1">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content" style="background: #fafbfc; display: flex; flex-direction: column;">
+          <div class="modal-header" style="background: linear-gradient(135deg, #10b981, #34d399); color: white; border: none; padding: 2.5rem 3rem; flex-shrink: 0;">
+            <h5 class="modal-title" style="font-size: 2rem; font-weight: 700; margin: 0;"><i class="fas fa-shield-heart" style="margin-right: 12px;"></i>Precautions & Care Instructions</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="font-size: 1.5rem;"></button>
+          </div>
+          <div class="modal-body" id="precautionsContent" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 3rem;">
+            <div class="text-center text-muted py-5"><i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 1rem; display: block;"></i>Loading precautions...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appointment History Modal -->
+    <div class="modal fade" id="appointmentHistoryModal" tabindex="-1">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content" style="display: flex; flex-direction: column; height: 100vh;">
+          <div class="modal-header appointments-modal-header" style="background: linear-gradient(135deg, #8b5cf6, #a855f7); color: white; border: none; padding: 2.5rem 3rem; flex-shrink: 0;">
+            <h5 class="modal-title" style="font-size: 2rem; font-weight: 700; margin: 0;"><i class="fas fa-calendar-alt" style="margin-right: 12px;"></i>Appointment History</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="font-size: 1.5rem; position: absolute; right: 2rem; top: 2rem;"></button>
+          </div>
+          <div class="appointments-modal-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+            <!-- Filter Tabs -->
+            <div class="appointments-filter-tabs" style="background: white; border-bottom: 2px solid #f3f4f6; padding: 1.5rem 3rem; display: flex; gap: 1rem; position: relative; z-index: 10; flex-shrink: 0;">
+              <button class="filter-tab active" data-filter="all" style="padding: 10px 24px; border: none; background: linear-gradient(135deg, #8b5cf6, #a855f7); color: white; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">🔄 All Appointments</button>
+              <button class="filter-tab" data-filter="upcoming" style="padding: 10px 24px; border: 2px solid #e2e8f0; background: white; color: #10b981; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">📅 Upcoming</button>
+              <button class="filter-tab" data-filter="past" style="padding: 10px 24px; border: 2px solid #e2e8f0; background: white; color: #9ca3af; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">📋 Past</button>
+            </div>
+            
+            <!-- Appointments List Container -->
+            <div class="appointments-history-container" style="padding: 3rem; overflow-y: auto; flex: 1; background: linear-gradient(135deg, #fafbfc 0%, #f5f3ff 100%);">
+              <div style="max-width: 1200px; margin: 0 auto;">
+                <div id="appointmentHistoryList" style="display: grid; gap: 2rem;">
+                  <div class="text-center text-muted py-5"><i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 1rem; display: block;"></i>Loading appointments...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appointment Detail Modal -->
+    <div class="modal fade" id="appointmentDetailModal" tabindex="-1">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content appointment-detail-modal" style="background: #fafbfc; display: flex; flex-direction: column;">
+          <div class="modal-header appointment-detail-header" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; border: none; padding: 0; height: auto; flex-shrink: 0;">
+            <div style="flex: 1; padding: 0; position: relative; height: 60px;">
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="font-size: 1.5rem; position: absolute; top: 15px; left: 20px; z-index: 10;"></button>
+            </div>
+          </div>
+          <div class="modal-body appointment-detail-body" id="appointmentDetailContent" style="padding: 0; overflow-y: auto; flex: 1;">
+            <div class="text-center text-muted py-5"><i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 1rem; display: block;"></i>Loading details...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Records Modal -->
+    <div class="modal fade" id="recordsModal" tabindex="-1">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content" style="background: #fafbfc; display: flex; flex-direction: column;">
+          <div class="modal-header" style="background: linear-gradient(135deg, #8b5cf6, #a855f7); color: white; border: none; padding: 2.5rem 3rem; flex-shrink: 0;">
+            <h5 class="modal-title" style="font-size: 2rem; font-weight: 700; margin: 0;"><i class="fas fa-file-medical" style="margin-right: 12px;"></i>Medical Records</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="font-size: 1.5rem;"></button>
+          </div>
+          <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 3rem;">
+            <div id="recordsContainer" style="overflow-y: auto; flex: 1;">
+              <div class="text-center text-muted py-5"><i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 1rem; display: block;"></i>Loading your medical records...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chatbot-shell" id="chatbotShell">
+      <button class="chatbot-fab" id="chatbotToggle" type="button" aria-label="Open assistant">
+        <i class="fas fa-robot"></i>
+      </button>
+      <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+          <div>
+            <strong>HealthQueue AI</strong>
+            <span>Ask about appointments, features, or symptoms</span>
+          </div>
+          <button class="chatbot-close" id="chatbotClose" type="button" aria-label="Close assistant">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages"></div>
+        <div class="chatbot-quick-replies" id="chatbotQuickReplies">
+          <button class="chatbot-quick-btn" data-chatbot-prompt="How do I book an appointment?">Book appointment</button>
+          <button class="chatbot-quick-btn" data-chatbot-prompt="I have fever and weakness.">Fever help</button>
+          <button class="chatbot-quick-btn" data-chatbot-prompt="Show me skin specialist doctors.">Skin doctor</button>
+        </div>
+        <div class="chatbot-typing d-none" id="chatbotTyping">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="chatbot-input-row">
+          <textarea id="chatbotInput" rows="2" placeholder="Type your question or symptoms..."></textarea>
+          <button class="chatbot-send" id="chatbotSend" type="button" aria-label="Send message">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

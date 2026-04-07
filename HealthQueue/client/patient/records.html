@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Medical Records • HealthQueue</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="patientstyle.css">
+</head>
+<body class="patient-dashboard patient-records-page">
+  <button class="mobile-menu-toggle d-lg-none" id="mobileMenuToggle" aria-label="Open navigation menu">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-hospital-symbol logo-icon-sm"></i>
+      <h4>HealthQueue</h4>
+      <p class="user-name" id="recordsSidebarName">Patient</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-calendar-check"></i> Appointments</a>
+      <a href="records.html" class="nav-item active"><i class="fas fa-file-medical-alt"></i> Medical Records</a>
+      <a href="profile.html" class="nav-item"><i class="fas fa-user"></i> Profile</a>
+    </nav>
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <main class="main-content">
+    <header class="dashboard-header records-page-header">
+      <div class="header-left">
+        <h2>Medical Records</h2>
+        <p class="header-subtitle">View all prescriptions, reports, and consultation summaries in one place.</p>
+      </div>
+      <div class="header-right gap-2">
+        <a href="dashboard.html" class="btn btn-outline-primary btn-sm"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+        <div class="user-avatar" id="recordsHeaderAvatar">P</div>
+      </div>
+    </header>
+
+    <section class="records-page-shell">
+      <div class="records-page-toolbar card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="records-page-summary">
+            <div>
+              <h3 id="recordsPageTitle">All Records</h3>
+              <p id="recordsPageSubtitle">Loading your medical history...</p>
+            </div>
+            <div class="records-page-count" id="recordsCountBadge">0 records</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="records-page-state d-none" id="recordsLoadingState">
+        <i class="fas fa-spinner fa-spin"></i>
+        <h4>Loading records...</h4>
+        <p>Please wait while we fetch your medical history.</p>
+      </div>
+
+      <div class="records-page-state d-none" id="recordsEmptyState">
+        <i class="fas fa-folder-open"></i>
+        <h4>No records found</h4>
+        <p>Your prescriptions and reports will appear here once available.</p>
+      </div>
+
+      <div class="records-page-state d-none records-error-state" id="recordsErrorState">
+        <i class="fas fa-circle-exclamation"></i>
+        <h4>Unable to load records</h4>
+        <p id="recordsErrorText">Something went wrong while loading your records.</p>
+      </div>
+
+      <div class="records-page-grid" id="recordsPageGrid"></div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="recordDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-0">
+          <div>
+            <h5 class="modal-title">Record Details</h5>
+            <p class="modal-subtitle mb-0">Detailed view of the selected medical record.</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="recordDetailsBody">
+          <div class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i>Loading record details...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="records.js"></script>
+</body>
+</html>

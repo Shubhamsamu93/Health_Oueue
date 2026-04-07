@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Records Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+        .log { background: white; padding: 10px; margin: 5px 0; border-left: 3px solid blue; }
+        .error { border-left-color: red; color: red; }
+        .success { border-left-color: green; color: green; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Records Debug Tool</h1>
+    <button onclick="testLogin()">1. Test Login</button>
+    <button onclick="testPatientId()">2. Check Patient ID</button>
+    <button onclick="testAPI()">3. Test API Call</button>
+    <button onclick="testRecordsRedirect()">4. Test Records Redirect</button>
+    <button onclick="clearLogs()">Clear Logs</button>
+    <hr>
+    <div id="logs"></div>
+
+    <script>
+        function log(msg, type = 'log') {
+            console.log(msg);
+            const div = document.getElementById('logs');
+            const p = document.createElement('div');
+            p.className = `log ${type === 'error' ? 'error' : type === 'success' ? 'success' : ''}`;
+            p.textContent = msg;
+            div.appendChild(p);
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        async function testLogin() {
+            log('📝 Testing login...');
+            const mockUser = {
+                _id: '69ce86be42172131e8e8a92b',
+                name: 'Test Patient',
+                email: 'patient1@healthqueue.com',
+                phone: '9876543210',
+                role: 'patient'
+            };
+            localStorage.setItem('user', JSON.stringify(mockUser));
+            localStorage.setItem('token', 'fake-token');
+            log('✅ Mock user stored in localStorage', 'success');
+            log('User: ' + JSON.stringify(mockUser));
+        }
+
+        function testPatientId() {
+            log('🔍 Checking patient ID extraction...');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            log('User from localStorage: ' + JSON.stringify(user));
+            const patientId = user?._id || user?.id || user?.patientId || '';
+            log(`PatientId extracted: ${patientId}`, patientId ? 'success' : 'error');
+        }
+
+        async function testAPI() {
+            log('🌐 Testing API endpoint...');
+            const patientId = '69ce86be42172131e8e8a92b';
+            const url = `http://localhost:5000/api/records/patient/${patientId}`;
+            log(`Calling: ${url}`);
+            try {
+                const res = await fetch(url);
+                log(`Response status: ${res.status}`, res.ok ? 'success' : 'error');
+                const data = await res.json();
+                log(`Records returned: ${data.length}`, data.length ? 'success' : 'error');
+                log(`Data: ${JSON.stringify(data).substring(0, 200)}...`);
+            } catch (e) {
+                log(`API Error: ${e.message}`, 'error');
+            }
+        }
+
+        function testRecordsRedirect() {
+            log('📍 Testing records page redirect...');
+            testLogin();
+            setTimeout(() => {
+                log('Redirecting to /patient/records.html', 'success');
+                window.location.href = '/patient/records.html';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
