@@ -135,7 +135,7 @@
                         window.location.href = "dashboard.html";
                     }, 1000);
                 } else {
-                    throw new Error(data.error || 'Login failed');
+                    throw new Error(data.error || data.msg || 'Login failed');
                 }
             } catch (error) {
                 alert('❌ Login failed: ' + error.message);
