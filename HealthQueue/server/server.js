@@ -8,10 +8,23 @@ const app = express(); // ✅ sabse pehle
 app.use(cors());
 app.use(express.json());
 
-// ✅ DB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+// ✅ DB connection for Serverless Environment
+const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) return; // already connected
+  
+  if (!process.env.MONGO_URI) {
+    console.error("FATAL ERROR: MONGO_URI is missing in Vercel Environment Variables.");
+    return;
+  }
+  
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB Connected Successfully");
+  } catch (err) {
+    console.error("MongoDB Connection Failed:", err);
+  }
+};
+connectDB();
 
 // ✅ routes
 app.use("/api/auth", require("./routes/authRoutes"));
