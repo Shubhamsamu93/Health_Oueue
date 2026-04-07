@@ -6,12 +6,7 @@ require("dotenv").config();
 const app = express(); // ✅ sabse pehle
 
 app.use(cors());
-app.use((req, res, next) => {
-  if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) {
-    return next();
-  }
-  express.json()(req, res, next);
-});
+app.use(express.json());
 
 // ✅ DB connection for Serverless Environment
 const connectDB = async () => {
