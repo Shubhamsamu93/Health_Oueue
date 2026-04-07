@@ -8,23 +8,35 @@ const app = express(); // ✅ sabse pehle
 app.use(cors());
 app.use(express.json());
 
-// ✅ DB connection for Serverless Environment
+// ✅ Improved DB connection for Serverless
 const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1) return; // already connected
+  if (mongoose.connection.readyState >= 1) {
+    console.log("Using existing MongoDB connection");
+    return;
+  }
   
-  if (!process.env.MONGO_URI) {
-    console.error("FATAL ERROR: MONGO_URI is missing in Vercel Environment Variables.");
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    console.error("❌ MONGO_URI is missing!");
     return;
   }
   
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected Successfully");
+    console.log("Attempting to connect to MongoDB...");
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000 // Fast fail if IP is blocked
+    });
+    console.log("✅ MongoDB Connected Successfully");
   } catch (err) {
-    console.error("MongoDB Connection Failed:", err);
+    console.error("❌ MongoDB Connection Failed:", err.message);
   }
 };
-connectDB();
+
+// Middleware to ensure DB is connected before processing requests
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // ✅ routes
 app.use("/api/auth", require("./routes/authRoutes"));
