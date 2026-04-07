@@ -1,6 +1,10 @@
 {
   "name": "healthqueue",
   "version": "1.0.0",
+  "scripts": {
+    "build": "cd HealthQueue/server && npm install",
+    "start": "cd HealthQueue/server && node server.js"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^16.0.3",

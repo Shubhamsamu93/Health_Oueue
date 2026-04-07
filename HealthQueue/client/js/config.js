@@ -4,7 +4,7 @@ const isVercel = window.location.hostname.includes('vercel.app');
 
 const API_BASE = isLocalhost 
   ? 'http://localhost:5000' 
-  : (isVercel ? '' : 'https://healthqueue-backend.onrender.com');
+  : 'https://health-oueu-backend.onrender.com';
 
 // Make it available globally
 window.API_BASE = API_BASE;
